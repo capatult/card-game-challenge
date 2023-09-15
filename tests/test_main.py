@@ -46,3 +46,12 @@ def test_report_cards():
     game.deal_cards()
     report = game.players[0].report_cards_in_hand()
     assert len(report.split(", ")) == 13
+
+def test_mock_input_and_output():
+    io_handler = IOHandler.using_mocked_input(
+        ["Q"]
+    )
+    # print(type(io_handler))
+    game = Game(io_handler)
+    game.play()
+    assert game.io_handler.output_log == [Game.GAME_CLOSE_MESSAGE]
