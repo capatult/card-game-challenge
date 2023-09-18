@@ -4,6 +4,25 @@ import pytest
 from lib.main import *
 from unittest.mock import Mock
 
+def make_fake_io_handler(inputs, output_log):
+    fake_io_handler = Mock()
+
+class MockIOHandler():
+    def __init__(self, input_sequence):
+        self.input_sequence = list(input_sequence)
+        self.index_of_next_input = 0
+        self.prompt_log = []
+        self.output_log = []
+
+    def fetch_input(self, prompt):
+        self.prompt_log.append(prompt)
+        result = self.input_sequence[self.index_of_next_input]
+        self.index_of_next_input += 1
+        return result
+
+    def send_output(self, message):
+        self.output_log.append(message)
+
 # Phase One
 # General concepts of cards, players and hands:
 #   * Cards (Card class and 52 instances thereof?) can be shuffled and dealt to 4 Player objects
@@ -50,28 +69,30 @@ def test_report_cards():
     assert len(report.split(", ")) == 13
 
 def test_mock_input_and_output():
-    fake_io_handler = Mock()
-    fake_io_handler.fetch_input.return_value = "Q"
-    output_log = []
-    fake_io_handler.send_output.side_effect = lambda x: output_log.append(x)
-    game = Game(fake_io_handler)
+    game = Game(
+        MockIOHandler(["Q"])
+    )
     game.play()
-    assert output_log == [Game.GAME_CLOSE_MESSAGE]
+    assert game._io_handler.output_log == [Game.GAME_CLOSE_MESSAGE]
 
 def test_display_cards_of_player():
-    fake_io_handler = Mock()
-    output_log = []
-    fake_io_handler.send_output.side_effect = lambda x: output_log.append(x)
-    game = Game(fake_io_handler)
+    game = Game(
+        MockIOHandler([])
+    )
     game.create_players()
     game.display_cards_of_player(0)
-    assert output_log == [""]
+    assert game._io_handler.output_log == [""]
 
 # Phase Two
 # Ability to play cards, 13 "tricks" making a full round:
 #   * Some user interaction such that the user can choose what card to play from their own hand
 #   * "Bot" hands to play a card, chosen randomly for now (restrictions on who can play what, and who leads, to come later)
 #   * Forming of "tricks" - 4 cards, 1 from each player - kept and preserved such that they can belong to a player who won that trick, later on
+
+# def user_can_play_card():
+#     game = Game(
+#         MockIOHandler(["P"])
+#     )
 
 # Phase Three
 # Basic rules introduced:
