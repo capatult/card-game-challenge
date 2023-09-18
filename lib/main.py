@@ -76,6 +76,9 @@ class Game():
                 return filtered_response if should_filter_response else raw_response
             prompt = subsequent_prompt
 
+    def display_cards_of_player(self, index_of_player):
+        self._output(self.players[index_of_player].report_cards_in_hand())
+
 class Player():
     def __init__(self, is_human=False):
         self.is_human = is_human
@@ -96,13 +99,9 @@ class Player():
 #             i_card_to_play = randrange(len(self.hand))
 #         return self.hand.pop(i_card_to_play)
 
-    def report_cards_in_hand(self, print_this=False):
+    def report_cards_in_hand(self):
         msg = ", ".join(str(card) for card in self.hand)
-        if print_this:
-            print(msg)
-        else:
-            return(msg)
-
+        return msg
 
 class Card():
     RANKS = tuple("A23456789TJQK")
