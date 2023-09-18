@@ -1,6 +1,7 @@
 # pylint: skip-file
 
 from lib.main import *
+from unittest.mock import Mock
 
 # Phase One
 # General concepts of cards, players and hands:
@@ -48,10 +49,10 @@ def test_report_cards():
     assert len(report.split(", ")) == 13
 
 def test_mock_input_and_output():
-    io_handler = IOHandler.using_mocked_input(
-        ["Q"]
-    )
-    # print(type(io_handler))
-    game = Game(io_handler)
+    fake_io_handler = Mock()
+    fake_io_handler.fetch_input.return_value = "Q"
+    output_log = []
+    fake_io_handler.send_output.side_effect = lambda x: output_log.append(x)
+    game = Game(fake_io_handler)
     game.play()
-    assert game.io_handler.output_log == [Game.GAME_CLOSE_MESSAGE]
+    assert output_log == [Game.GAME_CLOSE_MESSAGE]

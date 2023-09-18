@@ -1,37 +1,15 @@
 from random import shuffle, randrange
 
+
 class IOHandler():
-    def __init__(self, input_function=None, output_function=None):
-        self.input_function = (
-            input if input_function is None
-            else input_function
-        )
-        self.do_output = (
-            print if output_function is None
-            else output_function
-        )
+    def __init__(self):
+        pass
 
-    def do_input(self, prompt):
-        return self.input_function(self, prompt)
+    def fetch_input(self, prompt):
+        return input(prompt)
 
-    def get_next_mocked_input(self, prompt):
-        result = self.mocked_input[self.i_mocked_input]
-        self.i_mocked_input += 1
-        return result
-
-    def write_to_list(self, message):
-        self.output_log.append(message)
-
-    @classmethod
-    def using_mocked_input(cls, input_sequence):
-        result = cls(
-            input_function = cls.get_next_mocked_input,
-            output_function = cls.write_to_list,
-        )
-        result.mocked_input = list(input_sequence)
-        result.i_mocked_input = 0
-        result.output_log = []
-        return result
+    def send_output(self, message):
+        print(message)
 
 
 class Game():
@@ -47,17 +25,12 @@ class Game():
         self._io_handler = (
             IOHandler() if io_handler is None else io_handler
         )
-        # self._input = self._io_handler.do_input
-        self._output = self._io_handler.do_output
 
     def _input(self, prompt):
-        return self._io_handler.do_input(prompt)
+        return self._io_handler.fetch_input(prompt)
 
-    # @staticmethod
-    # def make_static_input_source(iterable):
-    #     for item in iterable:
-    #         yield item
-    #     return
+    def _output(self, message):
+        self._io_handler.send_output(message)
 
     def create_players(self, human_playing=False):
         self.players = [Player() for __ in range(4)]
